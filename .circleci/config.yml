@@ -13,7 +13,6 @@ jobs:
       - run:
           command: python3 -m src.data.fetch_raw_movie_data
           name: Fetch Raw Data
-    
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -31,154 +30,293 @@ jobs:
       - run:
           command: python3 -m src.data.make_clean_movie_data
           name: Clean Movie Data
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   clean-genre-metadata:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.data.make_genre_metadata
           name: Clean Genre Data
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   gen-vectorized-outcome:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.features.generate_vectorized_outcomes
           name: Generate Vectorized Outcome
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   gen-count-features:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.features.generate_count_features
           name: Generate Count Features
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   get-w2v-model:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: bash src/utils/get_word2vec.sh
           name: Get Word2Vec Model
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   gen-w2v-features:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.features.generate_word2vec_features
           name: Generate Word2Vec Features
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   test-train-split:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.utils.test_train_split
           name: Test Train Split
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   train-svc:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.models.svc
           name: Train SVC
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   train-naive-bayes:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.models.naive_bayes
           name: Train Naive Bayes
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   train-neural-net:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.models.neural_net
           name: Train Neural Net
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   score-models:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.scoring.score_models
           name: Score Models
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
   
   gen-comparison-report:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: bash src/report/comparison-report.sh
           name: Gen Comparison Report
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   test-best-model:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: python3 -m src.tests.test
           name: Test Best Model
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
   gen-validation-report:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - python/install-packages:
+          pkg-manager: pip
+      - attach_workspace:
+          at: ~/project
       - run:
           command: bash src/report/validate-best-report.sh
           name: Validate Best Model
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/*
+              - models/*
 
 workflows:
   main:
     jobs:
       - fetch-raw-data
+
       - clean-movie-data:
           requires:
             - fetch-raw-data
+
+      - clean-genre-metadata:
+          requires:
+            - clean-movie-data
+
+      - gen-vectorized-outcome:
+          requires:
+            - clean-genre-metadata
+
+      - gen-count-features:
+          requires:
+            - clean-movie-data
+
+      - get-w2v-model
+
+      - gen-w2v-features:
+          requires:
+            - clean-movie-data
+            - get-w2v-model
+
+      - test-train-split:
+          requires:
+            - gen-count-features
+            - gen-w2v-features
+            - gen-vectorized-outcome
+
+      - train-svc:
+          requires:
+            - test-train-split
+
+      - train-naive-bayes:
+          requires:
+            - test-train-split
+
+      - train-neural-net:
+          requires:
+            - test-train-split
+
+      - score-models:
+          requires:
+            - train-svc
+            - train-naive-bayes
+            - train-neural-net
+
+      - gen-comparison-report:
+          requires:
+            - score-models
+
+      - test-best-model:
+          requires:
+            - score-models
+
+      - gen-validation-report:
+          requires:
+            - test-best-model

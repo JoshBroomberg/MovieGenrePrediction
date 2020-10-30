@@ -5,13 +5,13 @@ import pprint
 all_movies=tmdb.Movies()
 top_movies=all_movies.popular()
  
-N_PAGES = 20
-N_PAGES_PER_GENRE = 4
+N_PAGES = 5
+N_PAGES_PER_GENRE = 2
 
 top1000_movies=[]
 print('Pulling movie list of popular movies, Please wait...')
 print('\tWhile you wait, here are some sampling of the movies that are being pulled...')
-for i in range(1,N_PAGES):
+for i in range(1,N_PAGES+1):
     if i%10==0:
         print(f'\t{i}/{N_PAGES} done')
         print('\t******* Waiting a few seconds to stay within rate limits of TMDB... *******)')
@@ -45,7 +45,7 @@ done_ids=[]
 for g_id in nr_ids:
     print('\tPulling movies for genre ID {g_id}. Here are sample of movies in the genre: '.format(g_id = str(g_id)) )
     baseyear -= 1
-    for page in range(1,N_PAGES_PER_GENRE):
+    for page in range(1,N_PAGES_PER_GENRE+1):
         time.sleep(1)
     
         url = 'https://api.themoviedb.org/3/discover/movie?api_key=' + api_key
