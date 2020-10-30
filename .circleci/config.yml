@@ -4,44 +4,14 @@ orbs:
   python: circleci/python@1.2.1
 
 jobs:
-  # create-env:
-  #   docker:
-  #     - image: circleci/python:3.8.5
-  #   steps:
-  #     - checkout
-  #     # - run: sudo chown -R circleci:circleci /usr/local/bin
-  #     # - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
-  #     - restore_cache:
-  #         key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-  #     - run:
-  #         command: |
-  #           sudo pip install virtualenv
-  #           virtualenv venv
-  #           source venv/bin/activate
-  #           pip install -r requirements.txt
-  #     - save_cache:
-  #         key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-  #         paths:
-  #           - "venv"
-  #           # - "/usr/local/bin"
-  #           # - "/usr/local/lib/python3.8/site-packages"
-  #     - run:
-  #         command: python3 src/data/fetch_raw_movie_data.py
-  #         name: Fetch Raw Data
-    
-  #     - persist_to_workspace:
-  #         root: ~/project
-  #         paths:
-  #             - data/*
-  #             - models/*
-
   fetch-raw-data:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages
+      - python/install-packages:
+          pkg-manager: pip
       - run:
-          command: python3 src/data/fetch_raw_movie_data.py
+          command: python3 -m src.data.fetch_raw_movie_data
           name: Fetch Raw Data
     
       - persist_to_workspace:
@@ -54,11 +24,12 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages
+      - python/install-packages:
+          pkg-manager: pip
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 src/data/make_clean_movie_data.py
+          command: python3 -m src.data.make_clean_movie_data
           name: Clean Movie Data
 
   clean-genre-metadata:
@@ -69,7 +40,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/data/make_genre_metadata.py
+          command: python3 -m src.data.make_genre_metadata
           name: Clean Genre Data
 
   gen-vectorized-outcome:
@@ -80,7 +51,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/features/generate_vectorized_outcomes.py
+          command: python3 -m src.features.generate_vectorized_outcomes
           name: Generate Vectorized Outcome
 
   gen-count-features:
@@ -91,7 +62,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/features/generate_count_features.py
+          command: python3 -m src.features.generate_count_features
           name: Generate Count Features
 
   get-w2v-model:
@@ -113,7 +84,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/features/generate_word2vec_features.py
+          command: python3 -m src.features.generate_word2vec_features
           name: Generate Word2Vec Features
 
   test-train-split:
@@ -124,7 +95,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/utils/test_train_split.py
+          command: python3 -m src.utils.test_train_split
           name: Test Train Split
 
   train-svc:
@@ -135,7 +106,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/models/svc.py
+          command: python3 -m src.models.svc
           name: Train SVC
 
   train-naive-bayes:
@@ -146,7 +117,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/models/naive_bayes.py
+          command: python3 -m src.models.naive_bayes
           name: Train Naive Bayes
 
   train-neural-net:
@@ -157,7 +128,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/models/neural_net.py
+          command: python3 -m src.models.neural_net
           name: Train Neural Net
 
   score-models:
@@ -168,7 +139,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/scoring/score_models.py
+          command: python3 -m src.scoring.score_models
           name: Score Models
   
   gen-comparison-report:
@@ -190,7 +161,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python3 src/tests/test.py
+          command: python3 -m src.tests.test
           name: Test Best Model
 
   gen-validation-report:
@@ -203,33 +174,6 @@ jobs:
       - run:
           command: bash src/report/validate-best-report.sh
           name: Validate Best Model
-
-  fetch-ecr-token:
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - aws-cli/setup:
-          profile-name: ecr
-      - run:
-          command: mkdir -p /tmp/build_data && aws ecr get-login-password --region us-west-2 --profile ecr >> /tmp/build_data/ecr_token.txt
-          name: Generate ECR token
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-              - build_data/ecr_token.txt
-
-  export-model-ECR:
-    executor: python/default
-    steps:
-      - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
-      
-      - run:
-          command: python3 pipeline/export_to_ecr.py
-          name: Build and Export Model to ECR
-
 
 workflows:
   main:
