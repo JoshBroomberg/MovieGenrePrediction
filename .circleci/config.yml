@@ -191,8 +191,9 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths:
-              - data/*
               - models/classifier_nn.h5
+              - reports/nn_training_validation_accuracy.png
+              - reports/nn_training_validation_loss.png
 
   score-models:
     executor: python/default
@@ -224,7 +225,7 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths:
-              - models/reports/comparison_report.html
+              - reports/comparison_report.html
 
   test-best-model:
     executor: python/default
@@ -252,7 +253,7 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths:
-              - models/reports/validate_best_report.html
+              - reports/validate_best_report.html
 
 workflows:
   main:
