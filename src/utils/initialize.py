@@ -11,7 +11,6 @@ import numpy as np
 import random
 import matplotlib
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pickle
 
 api_key = os.environ['TMDB_API_KEY'] #Enter your own API key here to run the code below. 

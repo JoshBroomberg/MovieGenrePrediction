@@ -5,8 +5,9 @@ data/processed/*
 data/raw/*
 !data/**/.gitkeep
 models/*
-!models/**/*.gitkeep
-src/report/generated/*.*
+!models/.gitkeep
+reports/*
+!reports/.gitkeep
 dominostats.json
 
 # Byte-compiled / optimized / DLL files
