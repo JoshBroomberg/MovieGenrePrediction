@@ -1,0 +1,305 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.2.1
+
+jobs:
+  fetch-raw-data:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - run:
+          command: pipenv run python3 -m src.data.fetch_raw_movie_data
+          name: Fetch Raw Data
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/raw/raw_movies.pkl
+
+  clean-movie-data:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.data.make_clean_movie_data
+          name: Clean Movie Data
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/interim/no_duplicate_movies.pkl
+              - data/processed/movies_with_overviews.pkl
+
+  clean-genre-metadata:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.data.make_genre_metadata
+          name: Clean Genre Data
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/processed/genre_ids.pkl
+              - data/processed/genre_id_to_name_dict.pkl
+
+  gen-vectorized-outcome:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.features.generate_vectorized_outcomes
+          name: Generate Vectorized Outcome
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/interim/vectorized_target.pkl
+              - models/mlb.pkl
+
+  gen-count-features:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.features.generate_count_features
+          name: Generate Count Features
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/interim/raw_count_features.pkl
+              - data/interim/tfidf_count_features.pkl
+              - models/count_vectorizer.pkl
+              - models/tfidf_transformer.pkl
+
+  get-w2v-model:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run bash src/utils/get_word2vec.sh
+          name: Get Word2Vec Model
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/external/GoogleNews-vectors-negative300-SLIM.bin
+
+  gen-w2v-features:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.features.generate_word2vec_features
+          name: Generate Word2Vec Features
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/interim/w2v_features.pkl
+
+  test-train-split:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.utils.test_train_split
+          name: Test Train Split
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - data/processed/indeces_test.pkl
+              - data/processed/indeces_train.pkl
+              - data/processed/raw_count_features_train.pkl
+              - data/processed/raw_count_features_test.pkl
+              - data/processed/target_test.pkl
+              - data/processed/target_train.pkl
+              - data/processed/tfidf_count_features_test.pkl
+              - data/processed/tfidf_count_features_train.pkl
+              - data/processed/w2v_features_train.pkl
+              - data/processed/w2v_features_test.pkl
+
+  train-svc:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.models.svc
+          name: Train SVC
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - models/classifier_svc.pkl
+
+  train-naive-bayes:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.models.naive_bayes
+          name: Train Naive Bayes
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - models/classifier_nb.pkl
+
+  train-neural-net:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.models.neural_net
+          name: Train Neural Net
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - models/classifier_nn.h5
+              - reports/nn_training_validation_accuracy.png
+              - reports/nn_training_validation_loss.png
+
+  score-models:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.scoring.score_models
+          name: Score Models
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - models/model_scores.json
+  
+  gen-comparison-report:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run bash src/report/comparison-report.sh
+          name: Gen Comparison Report
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - reports/comparison_report.html
+
+  test-best-model:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run python3 -m src.tests.test
+          name: Test Best Model
+
+  gen-validation-report:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages
+      - attach_workspace:
+          at: ~/project
+      - run:
+          command: pipenv run bash src/report/validate-best-report.sh
+          name: Validate Best Model
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+              - reports/validate_best_report.html
+
+workflows:
+  main:
+    jobs:
+      - fetch-raw-data
+
+      - clean-movie-data:
+          requires:
+            - fetch-raw-data
+
+      - clean-genre-metadata:
+          requires:
+            - clean-movie-data
+
+      - gen-vectorized-outcome:
+          requires:
+            - clean-genre-metadata
+
+      - gen-count-features:
+          requires:
+            - clean-movie-data
+
+      - get-w2v-model
+
+      - gen-w2v-features:
+          requires:
+            - clean-movie-data
+            - get-w2v-model
+
+      - test-train-split:
+          requires:
+            - gen-count-features
+            - gen-w2v-features
+            - gen-vectorized-outcome
+
+      - train-svc:
+          requires:
+            - test-train-split
+
+      - train-naive-bayes:
+          requires:
+            - test-train-split
+
+      - train-neural-net:
+          requires:
+            - test-train-split
+
+      - score-models:
+          requires:
+            - train-svc
+            - train-naive-bayes
+            - train-neural-net
+
+      - gen-comparison-report:
+          requires:
+            - score-models
+
+      - test-best-model:
+          requires:
+            - score-models
+
+      - gen-validation-report:
+          requires:
+            - test-best-model

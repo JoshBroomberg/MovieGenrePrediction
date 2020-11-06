@@ -33,11 +33,6 @@ w2v_nn.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-## needs apt-get install graphiz && pip install pydot
-# from keras.utils import plot_model
-# plot_model(w2v_nn, to_file='models/nn_figs/model.png', show_shapes=True)
-# print("Saved visualization of model architecture to models/nn_figs/model.png.")
-
 print("Starting training...")
 history = w2v_nn.fit(X_train, Y_train, epochs=5000, batch_size=500,verbose=1) #5000
 print("Training done!\n")
@@ -53,7 +48,7 @@ else:
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.savefig('models/nn_figs/nn_training_validation_accuracy.png')
+plt.savefig('reports/nn_training_validation_accuracy.png')
 
 # Plot training & validation loss values
 plt.clf()
@@ -61,9 +56,9 @@ plt.plot(history.history['loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.savefig('models/nn_figs/nn_training_validation_loss.png')
+plt.savefig('reports/nn_training_validation_loss.png')
 
-print("Saved training history visualization to models/nn_figs/nn_training_validation_accuracy.png and models/nn_figs/nn_training_validation_loss.png.\n")
+print("Saved training history visualization to reports/nn_training_validation_accuracy.png and reports/nn_training_validation_loss.png.\n")
 
 w2v_nn.save("models/classifier_nn.h5")
 print("Saved the model to models/classifier_nn.h5.\n")
