@@ -8,10 +8,9 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - run:
-          command: python3 -m src.data.fetch_raw_movie_data
+          command: pipenv run python3 -m src.data.fetch_raw_movie_data
           name: Fetch Raw Data
       - persist_to_workspace:
           root: ~/project
@@ -22,12 +21,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.data.make_clean_movie_data
+          command: pipenv run python3 -m src.data.make_clean_movie_data
           name: Clean Movie Data
       - persist_to_workspace:
           root: ~/project
@@ -39,12 +37,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.data.make_genre_metadata
+          command: pipenv run python3 -m src.data.make_genre_metadata
           name: Clean Genre Data
       - persist_to_workspace:
           root: ~/project
@@ -56,12 +53,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.features.generate_vectorized_outcomes
+          command: pipenv run python3 -m src.features.generate_vectorized_outcomes
           name: Generate Vectorized Outcome
       - persist_to_workspace:
           root: ~/project
@@ -73,12 +69,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.features.generate_count_features
+          command: pipenv run python3 -m src.features.generate_count_features
           name: Generate Count Features
       - persist_to_workspace:
           root: ~/project
@@ -92,12 +87,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: bash src/utils/get_word2vec.sh
+          command: pipenv run bash src/utils/get_word2vec.sh
           name: Get Word2Vec Model
       - persist_to_workspace:
           root: ~/project
@@ -108,12 +102,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.features.generate_word2vec_features
+          command: pipenv run python3 -m src.features.generate_word2vec_features
           name: Generate Word2Vec Features
       - persist_to_workspace:
           root: ~/project
@@ -124,12 +117,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.utils.test_train_split
+          command: pipenv run python3 -m src.utils.test_train_split
           name: Test Train Split
       - persist_to_workspace:
           root: ~/project
@@ -149,12 +141,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.models.svc
+          command: pipenv run python3 -m src.models.svc
           name: Train SVC
       - persist_to_workspace:
           root: ~/project
@@ -165,12 +156,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.models.naive_bayes
+          command: pipenv run python3 -m src.models.naive_bayes
           name: Train Naive Bayes
       - persist_to_workspace:
           root: ~/project
@@ -181,12 +171,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.models.neural_net
+          command: pipenv run python3 -m src.models.neural_net
           name: Train Neural Net
       - persist_to_workspace:
           root: ~/project
@@ -199,12 +188,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.scoring.score_models
+          command: pipenv run python3 -m src.scoring.score_models
           name: Score Models
       - persist_to_workspace:
           root: ~/project
@@ -215,12 +203,11 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: bash src/report/comparison-report.sh
+          command: pipenv run bash src/report/comparison-report.sh
           name: Gen Comparison Report
       - persist_to_workspace:
           root: ~/project
@@ -231,24 +218,22 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: python3 -m src.tests.test
+          command: pipenv run python3 -m src.tests.test
           name: Test Best Model
 
   gen-validation-report:
     executor: python/default
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - python/install-packages
       - attach_workspace:
           at: ~/project
       - run:
-          command: bash src/report/validate-best-report.sh
+          command: pipenv run bash src/report/validate-best-report.sh
           name: Validate Best Model
       - persist_to_workspace:
           root: ~/project
