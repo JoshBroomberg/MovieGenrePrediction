@@ -19,7 +19,7 @@ workflows:
           #   EVAL_SECS: 10
           #   MAX_STEPS: 1000
           #   TRAIN_EPOCHS: 10
-          machineType: K80
+          machineType: P5000
           modelPath: /models #"/storage/models"
           modelType: Custom
           name: pipeline params
