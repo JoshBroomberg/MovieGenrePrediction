@@ -15,7 +15,7 @@ workflows:
           # datasetAwsAccessKeyId: "secret:<some_secret_name>"
           # datasetAwsSecretAccessKey: "secret:<some_other_secret_name>"
           experimentEnv:
-            TMDB_API_KEY: "secret:<TMDB_API_KEY>"
+            TMDB_API_KEY: "secret:TMDB_API_KEY"
           machineType: C3
           modelPath: /models #"/storage/models"
           modelType: Custom
