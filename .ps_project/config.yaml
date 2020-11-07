@@ -10,7 +10,7 @@ workflows:
         params:
           # https://docs.paperspace.com/gradient/experiments/using-experiments/experiment-options
           command: bash src/pipeline/paperspace_bash_pipeline.sh
-          container: python/3.8-alpine
+          container: python/python:3.8-alpine
           # datasetUri: "https://some_other_uri/uri"
           # datasetAwsAccessKeyId: "secret:<some_secret_name>"
           # datasetAwsSecretAccessKey: "secret:<some_other_secret_name>"
