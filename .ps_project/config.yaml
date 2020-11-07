@@ -14,11 +14,8 @@ workflows:
           # datasetUri: "https://some_other_uri/uri"
           # datasetAwsAccessKeyId: "secret:<some_secret_name>"
           # datasetAwsSecretAccessKey: "secret:<some_other_secret_name>"
-          # experimentEnv:
-          #   EPOCHS_EVAL: 5
-          #   EVAL_SECS: 10
-          #   MAX_STEPS: 1000
-          #   TRAIN_EPOCHS: 10
+          experimentEnv:
+            TMDB_API_KEY: "secret:<TMDB_API_KEY>"
           machineType: C3
           modelPath: /models #"/storage/models"
           modelType: Custom
@@ -39,3 +36,4 @@ workflows:
         only:
           - paperspace*
           - master
+
